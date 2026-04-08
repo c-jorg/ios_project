@@ -1,12 +1,40 @@
 import Foundation
 
-struct Chess {
+struct ChessSnapshot: Codable {
     var board: [[Square]]
     var selectedSquare: (row: Int, col: Int)?
     var isWhiteTurn: Bool 
     var whiteCastled: Bool 
     var blackCastled: Bool 
     var lastMove: String?
+}
+
+Extension Chess {
+    func snapshot() -> ChessSnapshot {
+        ChessSnapshot(
+            board: board, 
+            selectedRow: selectedSquare?.row,
+            selectedCol: selectedSquare?.col,
+            isWhiteTurn: isWhiteTurn,
+            whiteCastled: whiteCastled,
+            blackCastled: blackCastled,
+            lastMove: lastMove
+        )
+    }
+
+    mutating func load(from snapshot: ChessSnapshot) {
+        board = snapshot.board 
+        if let r = snapshot.selectedRow, let c = snapshot.selectedCol { 
+            selectedSquare = (r, c)
+        } else {
+            selectedSquare = nil
+        }
+        isWhiteTurn = snapshot.isWhiteTurn
+        whiteCastled = snapshot.whiteCastled
+        blackCastled = snapshot.blackCastled
+        lastMove = snapshot.lastMove
+        }
+    }
 
     init(){
         self.board = []
@@ -18,7 +46,7 @@ struct Chess {
         newGame() 
     }
 
-    func newGame() {
+    mutating func newGame() {
         board = (0..<8).map { row in 
             (0..<8).map { col in 
                 Square(row: row, col: col, piece: nil)
@@ -30,7 +58,7 @@ struct Chess {
             board[0][col].piece = Piece(type: backRank[col], color: .black)
             board[1][col].piece = Piece(type: .pawn, color: .black)
             board[6][col].piece = Piece(type: .pawn, color: .white)
-            board[7][col].piece = Piece(type: backRack[col], color: .white)
+            board[7][col].piece = Piece(type: backRank[col], color: .white)
         }
 
         selectedSquare = nil 
@@ -40,7 +68,7 @@ struct Chess {
         lastMove = nil
     }
 
-    func handleTape(row: Int, col: Int){
+    mutating func handleTap(row: Int, col: Int){
         guard row >= 0, row < 8, col >= 0, col < 8 else { 
             return
         }

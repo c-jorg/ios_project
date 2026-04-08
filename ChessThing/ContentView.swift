@@ -1,10 +1,66 @@
 import SwiftUI
+import SwiftData
 
 struct ContentView: View {
+
+    enum Screen {
+        case menu
+        case game
+        case loadSelect 
+    }
+
+    @State var screen: Screen = .menu
     @State var game = Chess()
     var body: some View {
+        Group {
+            switch screen {
+                case .menu:
+                    MainMenuView(onStartGame: {
+                        game.newGame()
+                        screen = .game
+                    }
+                )
+                case .game:
+                    GameView(game: $game, onBackToMenu: {
+                        screen = .menu
+                    }
+                )
+            }
+        }.animation(.easeInOut, value: screen)
+    }
+
+    struct MainMenuView: View {
+        let onStartGame: () -> Void 
+        let onLoadGame: () -> Void 
+
+        var body: some View {
+            VStack(spacing: 20) {
+                Text("Chess Thing").font(.largeTitle.bold())
+
+                Button("Start New Game") {
+                    onStartGame()
+                }.buttonStyle(.borderedProminent)
+                button("Load Game") {
+                    //onLoadGame()
+                }.buttonStyle(.borderedProminent)
+            }.padding()
+        }
+    }
+    
+    struct GameView: View {
+        @Binding var game: Chess
+        let onBackToMenu: () -> Void
+
         VStack(spacing: 12) {
-            Text("Chess Game").font(.largeTitle.bold())
+            HStack{
+                Text("Chess Game").font(.largeTitle.bold())
+                Button("Menu"){
+                    onBackToMenu()
+                }.buttonStyle(.borderedProminent)
+                Button("Save"){
+                    //todo
+                }.buttonStyle(.borderedProminent)
+            }
 
             HStack{
                 Button("New Game"){
@@ -48,7 +104,7 @@ struct ContentView: View {
         }.frame(width: 44, height: 44)
     }
 
-    private func symbol(for piece: Piece) => String {
+    private func symbol(for piece: Piece) -> String {
         switch (piece.type, piece.color) {
             case (.king, .white): return "♔"
             case (.queen, .white): return "♕"
