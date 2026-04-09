@@ -3,13 +3,15 @@ import Foundation
 struct ChessSnapshot: Codable {
     var board: [[Square]]
     var selectedSquare: (row: Int, col: Int)?
+    var selectedRow: Int?
+    var selectedCol: Int?
     var isWhiteTurn: Bool 
     var whiteCastled: Bool 
     var blackCastled: Bool 
     var lastMove: String?
 }
 
-Extension Chess {
+extension Chess {
     func snapshot() -> ChessSnapshot {
         ChessSnapshot(
             board: board, 
@@ -84,6 +86,7 @@ Extension Chess {
 
             guard let movingPiece else {
                 selectedSquare = nil 
+                return
             }
 
             if destinationPiece?.color == movingPiece.color {

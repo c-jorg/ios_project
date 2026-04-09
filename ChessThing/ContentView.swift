@@ -11,6 +11,7 @@ struct ContentView: View {
 
     @State var screen: Screen = .menu
     @State var game = Chess()
+
     var body: some View {
         Group {
             switch screen {
@@ -18,6 +19,8 @@ struct ContentView: View {
                     MainMenuView(onStartGame: {
                         game.newGame()
                         screen = .game
+                    }, onLoadGame: {
+                        screen = .loadSelect
                     }
                 )
                 case .game:
@@ -25,6 +28,8 @@ struct ContentView: View {
                         screen = .menu
                     }
                 )
+                case .loadSelect:
+                Text("load game not implemented yet")
             }
         }.animation(.easeInOut, value: screen)
     }
@@ -40,7 +45,7 @@ struct ContentView: View {
                 Button("Start New Game") {
                     onStartGame()
                 }.buttonStyle(.borderedProminent)
-                button("Load Game") {
+                Button("Load Game") {
                     //onLoadGame()
                 }.buttonStyle(.borderedProminent)
             }.padding()
@@ -51,43 +56,45 @@ struct ContentView: View {
         @Binding var game: Chess
         let onBackToMenu: () -> Void
 
-        VStack(spacing: 12) {
-            HStack{
-                Text("Chess Game").font(.largeTitle.bold())
-                Button("Menu"){
-                    onBackToMenu()
-                }.buttonStyle(.borderedProminent)
-                Button("Save"){
-                    //todo
-                }.buttonStyle(.borderedProminent)
-            }
+        var body: some View{
+            VStack(spacing: 12) {
+                HStack{
+                    Text("Chess Game").font(.largeTitle.bold())
+                    Button("Menu"){
+                        onBackToMenu()
+                    }.buttonStyle(.borderedProminent)
+                    Button("Save"){
+                        //todo
+                    }.buttonStyle(.borderedProminent)
+                }
 
-            HStack{
-                Button("New Game"){
-                    game.newGame()
-                }.buttonStyle(.borderedProminent)
+                HStack{
+                    Button("New Game"){
+                        game.newGame()
+                    }.buttonStyle(.borderedProminent)
 
-                Text("Turn: \(game.isWhiteTurn ? "White" : "Black")").font(.headline)
-            }
+                    Text("Turn: \(game.isWhiteTurn ? "White" : "Black")").font(.headline)
+                }
 
-            VStack(spacing: 0) {
-                ForEach(0..<8, id: \.self) {row in
-                    HStack(spacing: 0) {
-                        ForEach(0..<8, id: \.self) {col in
-                            squareView(row: row, col: col).onTapGesture {
-                                game.handleTap(row: row, col: col)
+                VStack(spacing: 0) {
+                    ForEach(0..<8, id: \.self) {row in
+                        HStack(spacing: 0) {
+                            ForEach(0..<8, id: \.self) {col in
+                                squareView(row: row, col: col).onTapGesture {
+                                    game.handleTap(row: row, col: col)
+                                }
                             }
                         }
                     }
-                }
-            }.clipShape(RoundedRectangle(cornerRadius: 8)).overlay(RoundedRectangle(cornerRadius: 8).stroke(.black.opacity(0.4), lineWidth: 1))
+                }.clipShape(RoundedRectangle(cornerRadius: 8)).overlay(RoundedRectangle(cornerRadius: 8).stroke(.black.opacity(0.4), lineWidth: 1))
 
-            Text("Last Move: \(game.lastMove ?? "None")").font(.subheadline).foregroundStyle(.secondary)
-        }.padding()
+                Text("Last Move: \(game.lastMove ?? "None")").font(.subheadline).foregroundStyle(.secondary)
+            }.padding()
+        }
     }
 
     @ViewBuilder
-    private func squareView(row: Int, col: Int) -? some View {
+    private func squareView(row: Int, col: Int) -> some View {
         let square = game.board[row][col]
         let isSelected = game.selectedSquare?.row == row && game.selectedSquare?.col == col
 
