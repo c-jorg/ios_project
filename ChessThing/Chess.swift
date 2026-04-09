@@ -256,7 +256,7 @@ struct Chess {
         return false
     }
 
-    private func applyMove(from: (row: Int, col: Int), to: (row: Int, col: Int), piece: Piece) {
+    private mutating func applyMove(from: (row: Int, col: Int), to: (row: Int, col: Int), piece: Piece) {
         if piece.type == .king, abs(to.col - from.col) == 2 {
             board[to.row][to.col].piece = piece
             board[from.row][from.col].piece = nil
@@ -290,7 +290,7 @@ struct Chess {
         markMoved(piece: piece, from: from)
     }
 
-    private func markMoved(piece: Piece, from: (row: Int, col: Int)) {
+    private mutating func markMoved(piece: Piece, from: (row: Int, col: Int)) {
         switch (piece.color, piece.type, from.row, from.col) {
         case (.white, .king, _, _):
             whiteKingMoved = true
