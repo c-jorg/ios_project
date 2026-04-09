@@ -11,7 +11,7 @@ struct ContentView: View {
 
     @State var screen: Screen = .menu
     @State var game = Chess()
-    @Environtment(\.modelContext) var modelContext 
+    @Environment(\.modelContext) var modelContext 
     @Query(sort: \SavedGame.createdAt, order: .reverse) var savedGames: [SavedGame]
     @State var showSaveDialog = false 
     @State var saveName = ""
@@ -69,20 +69,39 @@ struct ContentView: View {
         } message: {
             Text(loadErrorMessage ?? "")
         }
-        .confirmationDialog("Save Game", isPresented: $showSaveDialog, titleVisibility: .visible) {
-            Button("Save") {
-                do {
-                    let name = saveName.trimmingCharacters(in: .whitespacesAndNewlines)
-                    let finalName = name.isEmpty ? "Game \(Date.now.formatted(date: .abbreviated, time: .shortened))" : name
-                    try SaveGameStore.save(name: finalName, game: game, context: modelContext)
-                    saveName = ""
-                } catch {
-                    saveErrorMessage = error.localizedDescription
+        .sheet(isPresented: $showSaveDialog) {
+            VStack(spacing: 16) {
+                Text("Save Game").font(.headline)
+                
+                TextField("Game name (optional)", text: $saveName)
+                    .textFieldStyle(.roundedBorder)
+                    .padding()
+                
+                HStack(spacing: 12) {
+                    Button("Cancel", role: .cancel) {
+                        showSaveDialog = false
+                        saveName = ""
+                    }
+                    .buttonStyle(.bordered)
+                    
+                    Button("Save") {
+                        do {
+                            let name = saveName.trimmingCharacters(in: .whitespacesAndNewlines)
+                            let finalName = name.isEmpty ? "Game \(Date.now.formatted(date: .abbreviated, time: .shortened))" : name
+                            try SaveGameStore.save(name: finalName, game: game, context: modelContext)
+                            saveName = ""
+                            showSaveDialog = false
+                        } catch {
+                            saveErrorMessage = error.localizedDescription
+                        }
+                    }
+                    .buttonStyle(.borderedProminent)
                 }
+                .padding()
+                
+                Spacer()
             }
-            Button("Cancel", role: .cancel) {}
-        } message: {
-            Text("Uses typed name if provided, otherwise generates one.")
+            .padding()
         }
     }
 
