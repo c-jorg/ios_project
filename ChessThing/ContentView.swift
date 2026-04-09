@@ -127,6 +127,7 @@ struct ContentView: View {
         @Binding var game: Chess
         let onBackToMenu: () -> Void
         let onSave: () -> Void
+        @State var animatingMove: (from: (Int, Int), to: (Int, Int))? = nil 
 
         var body: some View{
             VStack(spacing: 12) {
@@ -153,7 +154,20 @@ struct ContentView: View {
                         HStack(spacing: 0) {
                             ForEach(0..<8, id: \.self) {col in
                                 squareView(row: row, col: col).onTapGesture {
-                                    game.handleTap(row: row, col: col)
+                                    withAnimation(.easeInOut(duration: 0.3)){
+                                        if let selected = game.selectedSquare, selected.row == row, selected.col == col {
+                                            animatingMove = nil
+                                        } else if let selected = game.selectedSquare {
+                                            animatingMove = (from: selected, to: (row, col))
+                                            game.handleTap(row: row, col: col)
+                                        } else if game.board[row][col].piece != nil {
+                                            game.handleTap(row: row, col: col)
+                                        }
+                                    }
+
+                                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3){
+                                        animatingMove = nil
+                                    }
                                 }
                             }
                         }
@@ -168,6 +182,8 @@ struct ContentView: View {
         private func squareView(row: Int, col: Int) -> some View {
             let square = game.board[row][col]
             let isSelected = game.selectedSquare?.row == row && game.selectedSquare?.col == col
+            let isAnimatingFrom = animatingMove?.from.0 == row && animatingMove?.from.1 == col 
+            let isAnimatingTO = animatingMove?.to.0 == row && animatingMove?.to.1 == col
 
             ZStack {
                 Rectangle().fill((row+col).isMultiple(of: 2) ? .green : .brown.opacity(0.25))
@@ -176,9 +192,17 @@ struct ContentView: View {
                     Rectangle().fill(.yellow.opacity(0.35))
                 }
 
-                if let piece = square.piece {
+                if isAnimatingTo, let piece = game.board[row][col].piece {
                     Text(symbol(for: piece)).font(.largeTitle)
+                }else if isAnimatingFrom, let movingPiece = game.board[animatingMove!.to.0][animatingMove!.to.1].piece {
+                    Text(symbol(for: movingPiece)).font(.largeTitle).offset(x: CGFloat(animatingMove!.from.1 - animatingMove!.to.1) * 44, y: CGFloat(animatingMove!.from.0- animatingMove!.to.0) * 44)
+                }else if !isAnimatingFrom, let piece = square.piece {
+                    Text(symbol(for: piece)).font(largeTitle)
                 }
+
+                // if let piece = square.piece {
+                //     Text(symbol(for: piece)).font(.largeTitle)
+                // }
             }.frame(width: 44, height: 44)
         }
 
