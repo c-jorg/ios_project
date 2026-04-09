@@ -1,0 +1,32 @@
+//
+//  ChessThing2App.swift
+//  ChessThing2
+//
+//  Created by COSC Student on 2026-04-09.
+//
+
+import SwiftUI
+import SwiftData
+
+@main
+struct ChessThing2App: App {
+    var sharedModelContainer: ModelContainer = {
+        let schema = Schema([
+            Item.self,
+        ])
+        let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
+
+        do {
+            return try ModelContainer(for: schema, configurations: [modelConfiguration])
+        } catch {
+            fatalError("Could not create ModelContainer: \(error)")
+        }
+    }()
+
+    var body: some Scene {
+        WindowGroup {
+            ContentView()
+        }
+        .modelContainer(for: [SavedGame.self])
+    }
+}
