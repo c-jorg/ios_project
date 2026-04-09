@@ -11,7 +11,7 @@ struct ChessSnapshot: Codable {
     var lastMove: String?
 }
 
-extension Chess {
+struct Chess {
     func snapshot() -> ChessSnapshot {
         ChessSnapshot(
             board: board, 
