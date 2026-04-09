@@ -36,7 +36,6 @@ struct Chess {
         blackCastled = snapshot.blackCastled
         lastMove = snapshot.lastMove
         }
-    }
 
     init(){
         self.board = []
