@@ -39,7 +39,7 @@ struct ContentView: View {
                     }
                 )
                 case .loadSelect:
-                    onLoadGame(
+                    loadSelectView(
                         savedGames: savedGames,
                         onBack: {screen = .menu},
                         onLoad: {record in 
@@ -164,6 +164,35 @@ struct ContentView: View {
             }.padding()
         }
 
+    struct LoadSelectView: View {
+        let savedGames: [SavedGame]
+        let onBack: () -> Void
+        let onLoad: (SavedGame) -> Void
+
+        var body: some View {
+            NavigationStack {
+                List(savedGames) { record in
+                    Button {
+                        onLoad(record)
+                    } label: {
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text(record.name).font(.headline)
+                            Text(record.createdAt.formatted(date: .abbreviated, time: .shortened))
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
+                    }
+                }
+                .navigationTitle("Load Game")
+                .toolbar {
+                    ToolbarItem(placement: .topBarLeading) {
+                        Button("Back") { onBack() }
+                    }
+                }
+            }
+        }
+    }
+
         @ViewBuilder
         private func squareView(row: Int, col: Int) -> some View {
             let square = game.board[row][col]
@@ -196,35 +225,6 @@ struct ContentView: View {
                 case (.bishop, .black): return "♝"
                 case (.knight, .black): return "♞"
                 case (.pawn, .black): return "♟︎"
-            }
-        }
-    }
-}
-
-struct LoadSelectView: View {
-    let savedGames: [SavedGame]
-    let onBack: () -> Void
-    let onLoad: (SavedGame) -> Void
-
-    var body: some View {
-        NavigationStack {
-            List(savedGames) { record in
-                Button {
-                    onLoad(record)
-                } label: {
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text(record.name).font(.headline)
-                        Text(record.createdAt.formatted(date: .abbreviated, time: .shortened))
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                    }
-                }
-            }
-            .navigationTitle("Load Game")
-            .toolbar {
-                ToolbarItem(placement: .topBarLeading) {
-                    Button("Back") { onBack() }
-                }
             }
         }
     }
