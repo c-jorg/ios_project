@@ -14,15 +14,15 @@ struct Piece: Codable {
 }
 
 struct Square: Identifiable, Codable {
-    let id = UUID()
+    var id = UUID()
     let row: Int 
     let col: Int 
     var piece: Piece?
 
-    init(id: UUID = UUID(), row: Int, col: Int, piece: Piece?) {
-        self.id = id
+    init(row: Int, col: Int, piece: Piece?) {
+        //self.id = id
         self.row = row
         self.col = col
-        self. piece = piece
+        self.piece = piece
     }
 }

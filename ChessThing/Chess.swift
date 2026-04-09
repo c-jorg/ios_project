@@ -2,7 +2,7 @@ import Foundation
 
 struct ChessSnapshot: Codable {
     var board: [[Square]]
-    var selectedSquare: (row: Int, col: Int)?
+    //var selectedSquare: (row: Int, col: Int)?
     var selectedRow: Int?
     var selectedCol: Int?
     var isWhiteTurn: Bool 

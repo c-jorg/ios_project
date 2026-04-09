@@ -11,8 +11,16 @@ struct ContentView: View {
 
     @State var screen: Screen = .menu
     @State var game = Chess()
+    @Environtment(\.modelContext) var modelContext 
+    @Query(sort: \SavedGame.createdAt, order: .reverse) var savedGames: [SavedGame]
+    @State var showSaveDialog = false 
+    @State var saveName = ""
+    @State var saveErrorMessage: String?
+    @State var loadErrorMessage: String?
+        
 
     var body: some View {
+
         Group {
             switch screen {
                 case .menu:
@@ -26,12 +34,56 @@ struct ContentView: View {
                 case .game:
                     GameView(game: $game, onBackToMenu: {
                         screen = .menu
+                    }, onSave: {
+                        showSaveDialog = true
                     }
                 )
                 case .loadSelect:
-                Text("load game not implemented yet")
+                    LoadSelectView(
+                        savedGamed: savedGames,
+                        onBack: {screen = .menu},
+                        onLoad: {record in 
+                            do {
+                                game = try SaveGameStore.load(record: record)
+                                screen = .game
+                            } catch {
+                                loadErrorMessage = error.loaclizedDescription
+                            }
+                        }
+                    )
             }
         }.animation(.easeInOut, value: screen)
+        .alert("Save Error", isPresented: Binding(
+            get: { saveErrorMessage != nil },
+            set: { if !$0 { saveErrorMessage = nil } }
+        )) {
+            Button("OK", role: .cancel) {}
+        } message: {
+            Text(saveErrorMessage ?? "")
+        }
+        .alert("Load Error", isPresented: Binding(
+            get: { loadErrorMessage != nil },
+            set: { if !$0 { loadErrorMessage = nil } }
+        )) {
+            Button("OK", role: .cancel) {}
+        } message: {
+            Text(loadErrorMessage ?? "")
+        }
+        .confirmationDialog("Save Game", isPresented: $showSaveDialog, titleVisibility: .visible) {
+            Button("Save") {
+                do {
+                    let name = saveName.trimmingCharacters(in: .whitespacesAndNewlines)
+                    let finalName = name.isEmpty ? "Game \(Date.now.formatted(date: .abbreviated, time: .shortened))" : name
+                    try SaveGameStore.save(name: finalName, game: game, context: modelContext)
+                    saveName = ""
+                } catch {
+                    saveErrorMessage = error.localizedDescription
+                }
+            }
+            Button("Cancel", role: .cancel) {}
+        } message: {
+            Text("Uses typed name if provided, otherwise generates one.")
+        }
     }
 
     struct MainMenuView: View {
@@ -55,6 +107,7 @@ struct ContentView: View {
     struct GameView: View {
         @Binding var game: Chess
         let onBackToMenu: () -> Void
+        let onSave: () -> Void
 
         var body: some View{
             VStack(spacing: 12) {
@@ -64,7 +117,7 @@ struct ContentView: View {
                         onBackToMenu()
                     }.buttonStyle(.borderedProminent)
                     Button("Save"){
-                        //todo
+                        onSave()
                     }.buttonStyle(.borderedProminent)
                 }
 
@@ -124,6 +177,35 @@ struct ContentView: View {
                 case (.bishop, .black): return "♝"
                 case (.knight, .black): return "♞"
                 case (.pawn, .black): return "♟︎"
+            }
+        }
+    }
+}
+
+struct LoadSelectView: View {
+    let savedGames: [SavedGame]
+    let onBack: () -> Void
+    let onLoad: (SavedGame) -> Void
+
+    var body: some View {
+        NavigationStack {
+            List(savedGames) { record in
+                Button {
+                    onLoad(record)
+                } label: {
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text(record.name).font(.headline)
+                        Text(record.createdAt.formatted(date: .abbreviated, time: .shortened))
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                }
+            }
+            .navigationTitle("Load Game")
+            .toolbar {
+                ToolbarItem(placement: .topBarLeading) {
+                    Button("Back") { onBack() }
+                }
             }
         }
     }

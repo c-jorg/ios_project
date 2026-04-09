@@ -9,7 +9,7 @@ enum SaveGameStore {
         try context.save()
     }
 
-    static func laod(record: SavedGame) throws -> Chess {
+    static func load(record: SavedGame) throws -> Chess {
         let snap = try JSONDecoder().decode(ChessSnapshot.self, from: record.snapshot)
         var game = Chess()
         game.load(from: snap)
