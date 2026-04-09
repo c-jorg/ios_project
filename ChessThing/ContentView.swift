@@ -231,5 +231,5 @@ struct LoadSelectView: View {
 }
 
 #Preview {
-    ContentView()
+    ContentView().modelContainer(for: [SavedGame.self], inMemory: true)
 }

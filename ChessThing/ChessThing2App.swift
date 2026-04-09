@@ -27,6 +27,6 @@ struct ChessThing2App: App {
         WindowGroup {
             ContentView()
         }
-        .modelContainer(for: [SavedGame.self])
+        .modelContainer(sharedModelContainer)
     }
 }
