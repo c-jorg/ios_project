@@ -39,15 +39,15 @@ struct ContentView: View {
                     }
                 )
                 case .loadSelect:
-                    LoadSelectView(
-                        savedGamed: savedGames,
+                    onLoadGame(
+                        savedGames: savedGames,
                         onBack: {screen = .menu},
                         onLoad: {record in 
                             do {
                                 game = try SaveGameStore.load(record: record)
                                 screen = .game
                             } catch {
-                                loadErrorMessage = error.loaclizedDescription
+                                loadErrorMessage = error.localizedDescription
                             }
                         }
                     )
@@ -117,7 +117,7 @@ struct ContentView: View {
                     onStartGame()
                 }.buttonStyle(.borderedProminent)
                 Button("Load Game") {
-                    //onLoadGame()
+                    onLoadGame()
                 }.buttonStyle(.borderedProminent)
             }.padding()
         }
