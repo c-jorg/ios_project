@@ -128,7 +128,7 @@ struct Chess {
             }
 
             applyMove(from: from, to: to, piece: movingPiece)
-            lastMove = "\(toSquare(row: from.row, col: from.col))\(toSquare(row: to.row, col: to.col))"
+            lastMove = "\(toSquare(row: from.row, col: from.col)) \(toSquare(row: to.row, col: to.col))"
             isWhiteTurn.toggle()
             selectedSquare = nil
             return
