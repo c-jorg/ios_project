@@ -79,33 +79,33 @@ struct GameView: View {
         
         if let selected = game.selectedSquare,
             let sourcePiece = game.board[selected.row][selected.col].piece {
-                let destinationPiece = game.board[row][col].piece
-                let isDifferentColorTarget = destinationPiece?.color != sourcePiece.color
-                let isActualMove = !(selected.row == row && selected.col == col) && isDifferentColorTarget
+            let destinationPiece = game.board[row][col].piece
+            let isDifferentColorTarget = destinationPiece?.color != sourcePiece.color
+            let isActualMove = !(selected.row == row && selected.col == col) && isDifferentColorTarget
+            
+            if isActualMove {
+                animatingMove = MoveAnimation(
+                    from: (selected.row, selected.col),
+                    to: (row, col),
+                    piece: sourcePiece
+                )
+                moveProgress = 0
                 
-                if isActualMove {
-                    animatingMove = MoveAnimation(
-                        from: (selected.row, selected.col),
-                        to: (row, col),
-                        piece: sourcePiece
-                    )
-                    moveProgress = 0
-                    
-                    withAnimation(.easeInOut(duration: animationDuration)) {
-                        moveProgress = 1
-                        game.handleTap(row: row, col: col)
-                    }
-                    
-                    DispatchQueue.main.asyncAfter(deadline: .now() + animationDuration) {
-                        animatingMove = nil
-                        moveProgress = 0
-                    }
-                } else {
+                withAnimation(.easeInOut(duration: animationDuration)) {
+                    moveProgress = 1
                     game.handleTap(row: row, col: col)
+                }
+                
+                DispatchQueue.main.asyncAfter(deadline: .now() + animationDuration) {
+                    animatingMove = nil
+                    moveProgress = 0
                 }
             } else {
                 game.handleTap(row: row, col: col)
             }
+        } else {
+            game.handleTap(row: row, col: col)
+        }
     }
     
     @ViewBuilder
@@ -120,7 +120,7 @@ struct GameView: View {
                 .fill((row + col).isMultiple(of: 2) ? .green : .brown.opacity(0.25))
             
             if isSelected {
-                Rectangle().fill(.yellow.opacity(0.5))
+                Rectangle().fill(.yellow.opacity(0.35))
             }
             
             if let piece = square.piece, !isAnimatingFrom && !isAnimatingTo {
