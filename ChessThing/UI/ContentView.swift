@@ -49,8 +49,15 @@ struct ContentView: View {
                         onBack: {screen = .menu},
                         onLoad: {record in
                             do {
-                                game = try SaveGameStore.load(record: record)
-                                screen = .game
+                                let loaded = try SaveGameStore.load(record: record)
+                                switch loaded {
+                                case .chess(let loadedChess):
+                                    game = loadedChess
+                                    screen = .game
+                                case .checkers(let loadedCheckers):
+                                    checkersGame = loadedCheckers
+                                    screen = .checkersGame
+                                }
                             } catch {
                                 loadErrorMessage = error.localizedDescription
                             }
@@ -100,7 +107,15 @@ struct ContentView: View {
                             do {
                                 let name = saveName.trimmingCharacters(in: .whitespacesAndNewlines)
                                 let finalName = name.isEmpty ? "Game \(Date.now.formatted(date: .abbreviated, time: .shortened))" : name
-                                try SaveGameStore.save(name: finalName, game: game, context: modelContext)
+                                switch screen{
+                                case .game:
+                                    try SaveGameStore.save(name: finalName, game: game, context: modelContext)
+                                case .checkersGame:
+                                    try SaveGameStore.save(name: finalName, game: checkersGame, context: modelContext)
+                                default:
+                                        break
+                            
+                                }
                                 saveName = ""
                                 showSaveDialog = false
                             } catch {
@@ -121,4 +136,3 @@ struct ContentView: View {
 #Preview {
     ContentView().modelContainer(for: [SavedGame.self], inMemory: true)
 }
-
