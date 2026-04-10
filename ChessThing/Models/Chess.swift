@@ -12,6 +12,7 @@ struct ChessSnapshot: Codable {
     var blackKingsideRookMoved: Bool
     var blackQueensideRookMoved: Bool
     var lastMove: String?
+    var gameType: String?
 }
 
 struct Chess {
@@ -25,6 +26,7 @@ struct Chess {
     var blackKingsideRookMoved: Bool
     var blackQueensideRookMoved: Bool
     var lastMove: String?
+    var gameType: String?
 
     func snapshot() -> ChessSnapshot {
         ChessSnapshot(
@@ -38,7 +40,8 @@ struct Chess {
             whiteQueensideRookMoved: whiteQueensideRookMoved,
             blackKingsideRookMoved: blackKingsideRookMoved,
             blackQueensideRookMoved: blackQueensideRookMoved,
-            lastMove: lastMove
+            lastMove: lastMove,
+            gameType: gameType
         )
     }
 
@@ -57,6 +60,7 @@ struct Chess {
         blackKingsideRookMoved = snapshot.blackKingsideRookMoved
         blackQueensideRookMoved = snapshot.blackQueensideRookMoved
         lastMove = snapshot.lastMove
+        gameType = snapshot.gameType
     }
 
     init() {
@@ -98,6 +102,7 @@ struct Chess {
         blackKingsideRookMoved = false
         blackQueensideRookMoved = false
         lastMove = nil
+        gameType = "chess"
     }
 
     mutating func handleTap(row: Int, col: Int) {
