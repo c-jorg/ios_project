@@ -11,6 +11,7 @@ struct ContentView: View {
     
     @State var screen: Screen = .menu
     @State var game = Chess()
+    @State var checkersGame = Checkers()
     @Environment(\.modelContext) var modelContext
     @Query(sort: \SavedGame.createdAt, order: .reverse) var savedGames: [SavedGame]
     @State var showSaveDialog = false
@@ -23,32 +24,39 @@ struct ContentView: View {
         
         Group {
             switch screen {
-            case .menu:
-                MainMenuView(onStartGame: {
-                    game.newGame()
-                    screen = .game
-                }, onLoadGame: {
-                    screen = .loadSelect
-                }
-                )
-            case .game:
-                GameView(game: $game, onBackToMenu: {
-                    screen = .menu
-                }, onSave: {
-                    showSaveDialog = true
-                }
-                )
-            case .loadSelect:
-                LoadSelectView(
-                    savedGames: savedGames,
-                    onBack: {screen = .menu},
-                    onLoad: {record in
-                        do {
-                            game = try SaveGameStore.load(record: record)
-                            screen = .game
-                        } catch {
-                            loadErrorMessage = error.localizedDescription
+                case .menu:
+                    MainMenuView(onStartGame: {
+                        game.newGame()
+                        screen = .game
+                    }, onLoadGame: {
+                        screen = .loadSelect
+                    }
+                    )
+                case .game:
+                    GameView(game: $game, onBackToMenu: {
+                        screen = .menu
+                    }, onSave: {
+                        showSaveDialog = true
+                    }
+                    )
+                case .loadSelect:
+                    LoadSelectView(
+                        savedGames: savedGames,
+                        onBack: {screen = .menu},
+                        onLoad: {record in
+                            do {
+                                game = try SaveGameStore.load(record: record)
+                                screen = .game
+                            } catch {
+                                loadErrorMessage = error.localizedDescription
+                            }
                         }
+                    )
+                case .checkersGame:
+                    CheckersView(game: $checkersGame, onBackToMenu: {
+                        screen = .menu
+                    }, onSave: {
+                        showsSaveDialog = true
                     }
                 )
             }

@@ -12,6 +12,7 @@ struct ChessSnapshot: Codable {
     var blackKingsideRookMoved: Bool
     var blackQueensideRookMoved: Bool
     var lastMove: String?
+    var gameType: String?
 }
 
 struct Chess {
@@ -25,6 +26,7 @@ struct Chess {
     var blackKingsideRookMoved: Bool
     var blackQueensideRookMoved: Bool
     var lastMove: String?
+    var gameType: String
 
     func snapshot() -> ChessSnapshot {
         ChessSnapshot(
@@ -70,6 +72,7 @@ struct Chess {
         self.blackKingsideRookMoved = false
         self.blackQueensideRookMoved = false
         self.lastMove = nil
+        self.gameType = "chess"
         newGame()
     }
 
