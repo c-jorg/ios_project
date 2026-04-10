@@ -26,7 +26,7 @@ struct Chess {
     var blackKingsideRookMoved: Bool
     var blackQueensideRookMoved: Bool
     var lastMove: String?
-    var gameType: String
+    var gameType: String?
 
     func snapshot() -> ChessSnapshot {
         ChessSnapshot(
@@ -40,7 +40,8 @@ struct Chess {
             whiteQueensideRookMoved: whiteQueensideRookMoved,
             blackKingsideRookMoved: blackKingsideRookMoved,
             blackQueensideRookMoved: blackQueensideRookMoved,
-            lastMove: lastMove
+            lastMove: lastMove,
+            gameType: gameType
         )
     }
 
@@ -59,6 +60,7 @@ struct Chess {
         blackKingsideRookMoved = snapshot.blackKingsideRookMoved
         blackQueensideRookMoved = snapshot.blackQueensideRookMoved
         lastMove = snapshot.lastMove
+        gameType = snapshot.gameType
     }
 
     init() {
@@ -72,7 +74,6 @@ struct Chess {
         self.blackKingsideRookMoved = false
         self.blackQueensideRookMoved = false
         self.lastMove = nil
-        self.gameType = "chess"
         newGame()
     }
 
@@ -101,6 +102,7 @@ struct Chess {
         blackKingsideRookMoved = false
         blackQueensideRookMoved = false
         lastMove = nil
+        gameType = "chess"
     }
 
     mutating func handleTap(row: Int, col: Int) {
@@ -131,7 +133,7 @@ struct Chess {
             }
 
             applyMove(from: from, to: to, piece: movingPiece)
-            lastMove = "\(toSquare(row: from.row, col: from.col)) \(toSquare(row: to.row, col: to.col))"
+            lastMove = "\(toSquare(row: from.row, col: from.col))\(toSquare(row: to.row, col: to.col))"
             isWhiteTurn.toggle()
             selectedSquare = nil
             return
