@@ -3,7 +3,7 @@ import SwiftData
 
 struct CheckersView: View {
     @Binding var game: Checkers 
-    let onBackToMenuL () -> Void
+    let onBackToMenu: () -> Void
     let onSave: () -> Void
     @State private var animatingMove: MoveAnimation? = nil
     @State private var moveProgress: CGFloat = 0 
@@ -24,14 +24,13 @@ struct CheckersView: View {
     private func handleTap(row: Int, col: Int) {
         guard animatingMove == nil else {return}
 
-        if let selected = game.selectedSquare {
-            let sourcePiece = game.board[selected.row][selected.col].piece {
-                let destinationPiece = game.board[row][col].piece
+        if let selected = game.selectedSquare, 
+            let sourcePiece = game.board[selected.row][selected.col].piece, let destinationPiece = game.board[row][col].piece {
                 let isDifferentColorTarget = destinationPiece?.color != sourcePiece.color
                 let isActualMove = !(selected.row == row && selected.col == col) && isDifferentColorTarget
 
                 if isActualMove {
-                    animatingMove = moveAnimation(
+                    animatingMove = MoveAnimation(
                         from: (selected.row, selected.col),
                         to: (row, col),
                         piece: sourcePiece
@@ -54,7 +53,7 @@ struct CheckersView: View {
                 game.handleTap(row: row, col: col)
             }
         }
-    }
+    
 
     @ViewBuilder
     private func squareView(row: Int, col: Int) -> some View {
@@ -64,7 +63,7 @@ struct CheckersView: View {
         let isAnimatingTo = animatingMove?.to.row == row && animatingMove?.to.col == col
 
         ZStack {
-            Rectangle().fill((row + col).isMultiple(of: 2) ? green : .brown.opacity(0.25))
+            Rectangle().fill((row + col).isMultiple(of: 2) ? .green : .brown.opacity(0.25))
             if isSelected {
                 Rectangle().fill(.yellow.opacity(0.5))
             }
@@ -74,7 +73,7 @@ struct CheckersView: View {
         }.frame(width: cellSize, height: cellSize)
     }
 
-    private func symbol(for piece: checkersPiece) -> String {
+    private func symbol(for piece: CheckersPiece) -> String {
         switch (piece.type, piece.color) {
             case (.man, .white): return "⛀"
             case (.man, .black): return "⛂"

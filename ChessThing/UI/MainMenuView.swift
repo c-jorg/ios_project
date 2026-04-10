@@ -3,6 +3,7 @@ import SwiftData
 
 struct MainMenuView: View {
     let onStartGame: () -> Void
+    let onStartCheckersGame: () -> Void 
     let onLoadGame: () -> Void
     
     var body: some View {
@@ -13,7 +14,7 @@ struct MainMenuView: View {
                 onStartGame()
             }.buttonStyle(.borderedProminent)
             Button("start New Checkers Game"){
-                OnStartGame()
+                onStartGame()
             }.buttonStyle(.borderedProminent)
             Button("Load Game") {
                 onLoadGame()

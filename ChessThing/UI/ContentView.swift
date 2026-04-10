@@ -7,6 +7,7 @@ struct ContentView: View {
         case menu
         case game
         case loadSelect
+        case checkersGame
     }
     
     @State var screen: Screen = .menu
@@ -28,6 +29,9 @@ struct ContentView: View {
                     MainMenuView(onStartGame: {
                         game.newGame()
                         screen = .game
+                    }, onStartCheckersGame: {
+                        checkersGame.newGame()
+                        screen = .checkersGame
                     }, onLoadGame: {
                         screen = .loadSelect
                     }
@@ -56,7 +60,7 @@ struct ContentView: View {
                     CheckersView(game: $checkersGame, onBackToMenu: {
                         screen = .menu
                     }, onSave: {
-                        showsSaveDialog = true
+                        showSaveDialog = true
                     }
                 )
             }
