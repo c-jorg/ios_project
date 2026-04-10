@@ -9,8 +9,11 @@ struct MainMenuView: View {
         VStack(spacing: 20) {
             Text("Chess Thing").font(.largeTitle.bold())
             
-            Button("Start New Game") {
+            Button("Start New Chess Game") {
                 onStartGame()
+            }.buttonStyle(.borderedProminent)
+            Button("start New Checkers Game"){
+                OnStartGame()
             }.buttonStyle(.borderedProminent)
             Button("Load Game") {
                 onLoadGame()
